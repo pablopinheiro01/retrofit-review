@@ -1,0 +1,4 @@
+java -jar nomeDoArquivo.jar --server.port=8081
+
+https://github.com/alura-cursos/ceep-web-api/blob/main/README.md
+
