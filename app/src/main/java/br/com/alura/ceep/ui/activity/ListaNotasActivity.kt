@@ -45,19 +45,56 @@ class ListaNotasActivity : AppCompatActivity() {
             }
         }
 
+        testeChamadaSuspendFunComCoroutinesComResponse()
+
+
+    }
+
+    private fun testeChamadaSuspendFunComCoroutinesComResponse() {
+        lifecycleScope.launch {
+            val listaResposta = RetrofitInitializer().notaService.buscaTodasCoroutinesResponse()
+
+            val notas = listaResposta.body()?.map { response ->
+                response.nota
+            }
+
+            Log.i("ListaNotas", "onCreate: $notas")
+
+        }
+    }
+
+    private fun testeChamadaSuspendFunComCoroutines() {
+        lifecycleScope.launch {
+            val listaResposta = RetrofitInitializer().notaService.buscaTodasCoroutines()
+
+            val notas = listaResposta.map { nota ->
+                nota.nota
+            }
+
+            Log.i("ListaNotas", "onCreate: $notas")
+
+        }
+    }
+
+    private fun testeChamadaComExecuteUsandoCoroutines(){
 
         val call: Call<List<NotaResponse>> = RetrofitInitializer().notaService.buscaTodos()
 
-//        lifecycleScope.launch(Dispatchers.IO) {
-//
-//            val response: Response<List<NotaResponse>> = call.execute() //executa na main thread
-//            response.body()?.let{ notasResposta ->
-//                val notas: List<Nota> = notasResposta.map {
-//                    it.nota
-//                }
-//                Log.i("ListaNotas", "onCreate: $notas")
-//            }
-//        }
+        lifecycleScope.launch(Dispatchers.IO) {
+
+            val response: Response<List<NotaResponse>> = call.execute() //executa na main thread
+            response.body()?.let{ notasResposta ->
+                val notas: List<Nota> = notasResposta.map {
+                    it.nota
+                }
+                Log.i("ListaNotas", "onCreate: $notas")
+            }
+        }
+    }
+
+    private fun testeChamadaAsyncComEnqueue(){
+
+        val call: Call<List<NotaResponse>> = RetrofitInitializer().notaService.buscaTodos()
 
         call.enqueue(object : Callback<List<NotaResponse>?> {
             override fun onResponse(
@@ -77,7 +114,6 @@ class ListaNotasActivity : AppCompatActivity() {
 
             }
         })
-
     }
 
     private fun configuraFab() {
