@@ -10,7 +10,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 class RetrofitInitializer {
 
     private val client by lazy{
-        val loggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        val loggingInterceptor = HttpLoggingInterceptor()
+            .setLevel(HttpLoggingInterceptor.Level.BODY)
+
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .build()

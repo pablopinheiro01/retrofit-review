@@ -19,6 +19,7 @@ import br.com.alura.ceep.webclient.model.NotaResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 class ListaNotasActivity : AppCompatActivity() {
@@ -44,17 +45,38 @@ class ListaNotasActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
 
-            val call: Call<List<NotaResponse>> = RetrofitInitializer().notaService.buscaTodos()
-            val response: Response<List<NotaResponse>> = call.execute()
-            response.body()?.let{ notasResposta ->
-                val notas: List<Nota> = notasResposta.map {
-                    it.nota
+        val call: Call<List<NotaResponse>> = RetrofitInitializer().notaService.buscaTodos()
+
+//        lifecycleScope.launch(Dispatchers.IO) {
+//
+//            val response: Response<List<NotaResponse>> = call.execute() //executa na main thread
+//            response.body()?.let{ notasResposta ->
+//                val notas: List<Nota> = notasResposta.map {
+//                    it.nota
+//                }
+//                Log.i("ListaNotas", "onCreate: $notas")
+//            }
+//        }
+
+        call.enqueue(object : Callback<List<NotaResponse>?> {
+            override fun onResponse(
+                call: Call<List<NotaResponse>?>,
+                response: Response<List<NotaResponse>?>
+            ) {
+                response.body()?.let{ notasResposta ->
+                    val notas: List<Nota> = notasResposta.map {
+                        it.nota
+                    }
+                    Log.i("ListaNotas", "onCreate: $notas")
                 }
-                Log.i("ListaNotas", "onCreate: $notas")
             }
-        }
+
+            override fun onFailure(call: Call<List<NotaResponse>?>, t: Throwable) {
+                Log.i("ListaNotas", "erro: $t")
+
+            }
+        })
 
     }
 
