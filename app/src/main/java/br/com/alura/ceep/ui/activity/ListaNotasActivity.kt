@@ -14,6 +14,7 @@ import br.com.alura.ceep.databinding.ActivityListaNotasBinding
 import br.com.alura.ceep.extensions.vaiPara
 import br.com.alura.ceep.model.Nota
 import br.com.alura.ceep.ui.recyclerview.adapter.ListaNotasAdapter
+import br.com.alura.ceep.webclient.NotaWebClient
 import br.com.alura.ceep.webclient.RetrofitInitializer
 import br.com.alura.ceep.webclient.model.NotaResponse
 import kotlinx.coroutines.Dispatchers
@@ -34,21 +35,57 @@ class ListaNotasActivity : AppCompatActivity() {
         AppDatabase.instancia(this).notaDao()
     }
 
+    private val webClient by lazy{
+        NotaWebClient()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         configuraFab()
         configuraRecyclerView()
         lifecycleScope.launch {
+            val notas = webClient.buscaTodas()
+            Log.i("onCreateCoroutines", "lista de notas: $notas")
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 buscaNotas()
             }
         }
 
-        testeChamadaSuspendFunComCoroutinesComResponse()
-
-
     }
+
+    private fun configuraFab() {
+        binding.activityListaNotasFab.setOnClickListener {
+            Intent(this, FormNotaActivity::class.java).apply {
+                startActivity(this)
+            }
+        }
+    }
+
+    private fun configuraRecyclerView() {
+        binding.activityListaNotasRecyclerview.adapter = adapter
+        adapter.quandoClicaNoItem = { nota ->
+            vaiPara(FormNotaActivity::class.java) {
+                putExtra(NOTA_ID, nota.id)
+            }
+        }
+    }
+
+    private suspend fun buscaNotas() {
+        dao.buscaTodas()
+            .collect { notasEncontradas ->
+                binding.activityListaNotasMensagemSemNotas.visibility =
+                    if (notasEncontradas.isEmpty()) {
+                        binding.activityListaNotasRecyclerview.visibility = GONE
+                        VISIBLE
+                    } else {
+                        binding.activityListaNotasRecyclerview.visibility = VISIBLE
+                        adapter.atualiza(notasEncontradas)
+                        GONE
+                    }
+            }
+    }
+
 
     private fun testeChamadaSuspendFunComCoroutinesComResponse() {
         lifecycleScope.launch {
@@ -114,37 +151,5 @@ class ListaNotasActivity : AppCompatActivity() {
 
             }
         })
-    }
-
-    private fun configuraFab() {
-        binding.activityListaNotasFab.setOnClickListener {
-            Intent(this, FormNotaActivity::class.java).apply {
-                startActivity(this)
-            }
-        }
-    }
-
-    private fun configuraRecyclerView() {
-        binding.activityListaNotasRecyclerview.adapter = adapter
-        adapter.quandoClicaNoItem = { nota ->
-            vaiPara(FormNotaActivity::class.java) {
-                putExtra(NOTA_ID, nota.id)
-            }
-        }
-    }
-
-    private suspend fun buscaNotas() {
-        dao.buscaTodas()
-            .collect { notasEncontradas ->
-                binding.activityListaNotasMensagemSemNotas.visibility =
-                    if (notasEncontradas.isEmpty()) {
-                        binding.activityListaNotasRecyclerview.visibility = GONE
-                        VISIBLE
-                    } else {
-                        binding.activityListaNotasRecyclerview.visibility = VISIBLE
-                        adapter.atualiza(notasEncontradas)
-                        GONE
-                    }
-            }
     }
 }
