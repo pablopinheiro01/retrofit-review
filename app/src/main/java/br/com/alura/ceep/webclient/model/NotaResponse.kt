@@ -10,7 +10,7 @@ class NotaResponse(
 ) {
 
     val nota: Nota get() = Nota(
-        id = 0,
+        id = id ?: throw Exception("Ja existe o id"),
         titulo = titulo ?: "",
         descricao = descricao ?: "",
         imagem = imagem ?: ""
