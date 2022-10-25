@@ -18,4 +18,18 @@ class NotaRepository(
         }
     }
 
+    fun buscaPorId(id: String): Flow<Nota> {
+        return dao.buscaPorId(id)
+    }
+
+    suspend fun remove(nota: String) {
+        dao.remove(nota)
+    }
+
+    suspend fun salva(nota: Nota) {
+        dao.salva(nota)
+        webClient.salva(nota)
+    }
+
+
 }
