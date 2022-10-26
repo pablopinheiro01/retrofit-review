@@ -17,5 +17,8 @@ data class Nota(
     // o tipo Bool nao e suportado pelo sqlite por isso o uso de Strings
     //0 = false e 1 = true
     @ColumnInfo(defaultValue = "0")
-    val synchronized: Boolean = false
+    val synchronized: Boolean = false,
+
+    @ColumnInfo(defaultValue = "0")
+    val disabled: Boolean = false
 )
