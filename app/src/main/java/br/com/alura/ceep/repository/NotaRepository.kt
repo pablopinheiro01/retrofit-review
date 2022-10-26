@@ -26,8 +26,9 @@ class NotaRepository(
         return dao.buscaPorId(id)
     }
 
-    suspend fun remove(nota: String) {
-        dao.remove(nota)
+    suspend fun remove(id: String) {
+        dao.remove(id)
+        webClient.remove(id)
     }
 
     suspend fun salva(nota: Nota) {
