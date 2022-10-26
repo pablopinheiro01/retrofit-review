@@ -20,7 +20,7 @@ class NotaWebClient {
     suspend fun buscaTodas(): List<Nota>?{
 
         return try {
-            notaService.buscaTodasCoroutines().map { nota ->
+                                                                                                                            notaService.buscaTodasCoroutines().map { nota ->
                 nota.nota
             }
         } catch (e: Exception) {
@@ -29,7 +29,7 @@ class NotaWebClient {
         }
     }
 
-    suspend fun salva(nota: Nota) {
+    suspend fun salva(nota: Nota): Boolean{
         try{
             val req = notaService.salva(
                 nota.id,
@@ -39,14 +39,19 @@ class NotaWebClient {
                     descricao = nota.descricao
                 )
             )
-            if(req.isSuccessful){
-                Log.i(TAG, "Sucesso BB")
-            }else{
-                Log.i(TAG, "Tem parada errada ai irmao ${req.code()}")
-            }
+//            if(req.isSuccessful){
+//                Log.i(TAG, "Sucesso BB")
+//            }else{
+//                Log.i(TAG, "Tem parada errada ai irmao ${req.code()}")
+//            }
+
+            return req.isSuccessful
+
         }catch (e: Exception){
             Log.e(TAG, "Erro gerado: $e")
         }
+
+        return false
     }
 
 }
