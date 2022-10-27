@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import br.com.alura.ceep.database.AppDatabase
 import br.com.alura.ceep.databinding.ActivityListaNotasBinding
 import br.com.alura.ceep.extensions.vaiPara
@@ -24,7 +25,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ListaNotasActivity : AppCompatActivity() {
+class ListaNotasActivity : AppCompatActivity(){
 
     private val binding by lazy {
         ActivityListaNotasBinding.inflate(layoutInflater)
@@ -41,6 +42,18 @@ class ListaNotasActivity : AppCompatActivity() {
         setContentView(binding.root)
         configuraFab()
         configuraRecyclerView()
+        chamaTodasAsListas()
+        configuraSwipe()
+
+    }
+
+    private fun configuraSwipe() {
+        binding.root.setOnRefreshListener {
+            chamaTodasAsListas()
+        }
+    }
+
+    private fun chamaTodasAsListas() {
         lifecycleScope.launch {
 
             launch {
@@ -50,7 +63,7 @@ class ListaNotasActivity : AppCompatActivity() {
                 buscaNotas()
             }
         }
-
+        binding.root.isRefreshing = false
     }
 
     private suspend fun sincronizaTodasAsNotas() {
