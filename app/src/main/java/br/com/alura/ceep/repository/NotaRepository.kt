@@ -26,26 +26,32 @@ class NotaRepository(
         return dao.buscaPorId(id)
     }
 
-    suspend fun remove(id: String) {
+    suspend fun desativaNota(id: String) {
         dao.desativa(id)
-        if(webClient.remove(id)){
+        remove(id)
+    }
+
+    private suspend fun remove(id: String) {
+        if (webClient.remove(id)) {
             dao.remove(id)
         }
     }
 
     suspend fun salva(nota: Nota) {
-        dao.salva(nota)
         if(webClient.salva(nota)){
             val notaSincronizada = nota.copy(synchronized = true)
             dao.salva(notaSincronizada)
+            return
         }
+        dao.salva(nota)
+
     }
 
     suspend fun sincronizaTodasAsNotas(){
         val notasDesativadas = dao.buscaNotasDesativadas().first()
 
         notasDesativadas.forEach{
-            remove(it.id)
+            desativaNota(it.id)
         }
 
         val notasNaoSincronizadas = dao.buscaNaoSincronizadas().first()

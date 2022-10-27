@@ -1,7 +1,6 @@
 package br.com.alura.ceep.ui.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -113,7 +112,7 @@ class FormNotaActivity : AppCompatActivity() {
     private fun remove() {
         lifecycleScope.launch {
             notaId?.let { nota->
-                notaRepository.remove(nota)
+                notaRepository.desativaNota(nota)
             }
             finish()
         }
